@@ -5,13 +5,13 @@ var app = express();
 var db = require("./database.js");
 
 // Require md5 MODULE
-var md5 = require('md5');
+var md5 = require("md5");
 // Make Express use its own built-in body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Set server port
-let HTTP_PORT = 5000;
+var HTTP_PORT = 5000;
 // Start server
 app.listen(HTTP_PORT, () => {
     console.log("Server running on port %PORT%".replace("%PORT%",HTTP_PORT))
@@ -27,7 +27,7 @@ app.get("/app/", (req, res, next) => {
 app.post("/app/new/", (req,res) => {
 	const stmt = db.prepare("INSERT INTO userinfo (user, pass) VALUES (?, ?)");
 	const info = stmt.run(req.body.user, md5(req.body.pass));
-	res.status(201).json({"message": info.changes + " record created: ID " + info.lastInsertRowid});
+	res.status(201).json({"message": info.changes+ " record created: ID " + info.lastInsertRowid + "201"});
 });
 
 // READ a list of all users (HTTP method GET) at endpoint /app/users/
@@ -37,7 +37,11 @@ app.get("/app/users", (req, res) => {
 });
 
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
-
+app.get("/app/new/:id", (req,res) => {
+	const stmt = db.prepare("SELECT * FROM userinfo WHERE id = ?");
+	const info = stmt.get(req.params.id);
+	res.status(200).json({"id": info.id,"user": info.user,"pass": user.pass});
+});
 // UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
 
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
